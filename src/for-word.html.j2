@@ -8,9 +8,7 @@
 {# ------------------------------------------------------------------------------------ #}
 {%- macro renderTags(question) -%}
   {% if question.tags|length > 0 %}
-    <div>
-      🏷️ <b>Tags:</b> {% for tag in question.tags %}<i>{{tag.name}}</i>{% if not loop.last %}, {% endif %}{% endfor %}
-    </div>
+
   {% endif %}
 {%- endmacro -%}
 {%- macro renderResourcePageReferences(question) -%}
@@ -26,9 +24,9 @@
     {% endif %}
   {% endfor %}
   {% if refs|length > 0 %}
-    <div>
+    {#<div>
       📖 <b>Resource Pages:</b> {% for ref in refs %}{%- set resourcePageLink = dc.config.client_url ~ '/knowledge-models/' ~ dc.package.id ~ '/resource-pages/' ~ ref.uuid -%}<a id="{{ref.ref_uuid}}" class="reference resourcepage-link" href="{{ resourcePageLink }}"><i>{{ ref.collection_title }} - {{ ref.title }}</i></a>{% if not loop.last %}, {% endif %}{% endfor %}
-    </div>
+    </div>#}
   {% endif %}
 {%- endmacro -%}
 {%- macro renderURLReferences(question) -%}
@@ -43,9 +41,9 @@
     {% endif %}
   {% endfor %}
   {% if refs|length > 0 %}
-    <div>
+    {#<div>
       🔗 <b>External Links:</b> {% for ref in refs %}<a href="{{ref.url}}" target="_blank"><i>{{ref.label}}</i></a>{% if not loop.last %}, {% endif %}{% endfor %}
-    </div>
+    </div>#}
   {% endif %}
 {%- endmacro -%}
 {%- macro renderExperts(question) -%}
@@ -60,9 +58,9 @@
     {% endif %}
   {% endfor %}
   {% if experts|length > 0 %}
-    <div>
+   {# <div>
       🙋 <b>Experts:</b> {% for expert in experts %}<i>{{expert.name}} (<a href="mailto:{{expert.email}}">{{expert.email}}</a>){% if not loop.last %}, {% endif %}</i>{% endfor %}
-    </div>
+    </div>#}
   {% endif %}
 {%- endmacro -%}
 {# ------------------------------------------------------------------------------------ #}
@@ -71,7 +69,6 @@
 {%- macro renderAnswerValue(question, reply, path, humanIdentifier) -%}
   <div>
     <p>
-      ✔️
       {% if reply is of_type("StringReply") %}
         <span>{{reply.value}}</span>
       {% else %}
@@ -94,13 +91,9 @@
   {% set humanIdentifier = humanIdentifier ~ "." ~ hi|of_alphabet %}
   <div>
     <p>
-      ✔️ <span>{{ hi|of_alphabet }}. {{answer.label}}</span>
+       <span> {{answer.label}}</span>
     </p>
-    {% if answer.advice %}
-    <p>
-      <b>Advice:</b> {{answer.advice|markdown}}
-    </p>
-    {% endif %}
+    
     {% if answer.followups|length > 0 %}
       <div>
         {% set hiPrefix = humanIdentifier ~ "." %}
@@ -114,7 +107,6 @@
 {%- endmacro -%}
 {%- macro renderAnswerList(question, reply, path, humanIdentifier) -%}
   <div>
-    <h4>Answers ({{reply.items|length}} items)</h4>
     {% set itemPathPrefix = path ~ "." %}
     {% set hiPrefix = humanIdentifier ~ "." %}
     {% for i in reply.items %}
@@ -140,9 +132,9 @@
     <ul>
     {% for choice in question.choices %}
       {%- if choice in reply.choices %}
-        <li>✔️ {{ choice.label }}</li>
+        <li>{{ choice.label }}</li>
       {%- else %}
-        <li>❌ {{ choice.label }}</li>
+        
       {%- endif %}
     {% endfor %}
     </ul>
@@ -150,15 +142,15 @@
 {%- endmacro -%}
 {%- macro renderAnswerItemSelect(question, reply, path, humanIdentifier) -%}
   <div>
-    <p>✔️ {{ reply.item_title }}</p>
+    <p> {{ reply.item_title }}</p>
   </div>
 {%- endmacro -%}
 {%- macro renderAnswerFile(question, reply, path, humanIdentifier) -%}
   <div>
   {% if reply.file %}
-    <p>✔️ <a href="{{ reply.file.download_url }}" target="_blank">{{ reply.file.name }}</a> ({{ reply.file.size|bytesize_format }})</p>
+    <p> <a href="{{ reply.file.download_url }}" target="_blank">{{ reply.file.name }}</a> ({{ reply.file.size|bytesize_format }})</p>
   {% else %}
-    <p>❌ The file has been deleted</p>
+    <p> The file has been deleted</p>
   {% endif %}
   </div>
 {%- endmacro -%}
@@ -192,7 +184,7 @@
       {{ renderAnswerFile(question, reply, path, humanIdentifier) }}
     {% endif %}
   {% else %}
-    <p>❗ <i>This question has not been answered yet!</i></p>
+    
   {% endif %}
 {%- endmacro -%}
 {%- macro renderQuestion(question, path, humanIdentifier) -%}
@@ -200,11 +192,7 @@
   <div>
     <h2>{{humanIdentifier}}. {{question.title}}</h2>
 
-    {{ renderTags(question) }}
-
     {{ renderQuestionExtras(question) }}
-
-    {{ question.text|markdown }}
 
     {{ renderQuestionReply(question, path, humanIdentifier) }}
   </div>
@@ -212,51 +200,16 @@
 {# ------------------------------------------------------------------------------------ #}
 {#  CHAPTER MACROS                                                                      #}
 {# ------------------------------------------------------------------------------------ #}
-{%- macro renderReport(report) -%}
-  <section>
-    <h2>Summary</h2>
-    <h3>Answered indication</h3>
-    <table>
-      <tbody>
-        {% for item in report.indications %}
-          <tr>
-            <td>Answered {% if item.is_for_phase %}(current phase){% endif %}</td>
-              <td>{{item.answered}} / {{item.total}} </td>
-            <td>{{ "%.2f"|format(item.percentage)}} %</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% if report.metrics|length > 0 %}
-    <h3>Metrics</h3>
-    <table>
-      <thead><tr><th>Metric</th><th>Score</th></tr></thead>
-      <tbody>
-        {% for item in report.metrics %}
-          <tr>
-            <td>{{ item.metric.title }}</td>
-            <td>{{ "%.2f"|format(item.measure) }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-  </section>
-{%- endmacro -%}
+
 {%- macro renderChapter(chapter, humanIdentifier) -%}
       <section>
         <h1>{{humanIdentifier|roman}}. {{chapter.title}}</h1>
-        <p>{{chapter.text|markdown}}</p>
-
-        {% for chapterReport in chapter.reports %}
-          {{ renderReport(chapterReport) }}
-        {% endfor %}
 
         <section>
           {% for question in chapter.questions %}
             {{ renderQuestion(question, chapter.uuid, loop.index) }}
           {% else %}
-            <p><i>No questions</i></p>
+
           {% endfor %}
         </section>
       </section>
@@ -287,16 +240,10 @@
     </tr>
     {% endfor %}
     {% if dc.current_phase %}
-    <tr>
-      <th>Project Phase</th>
-      <td>{{dc.current_phase.title}}</td>
-    </tr>
+
     {% endif %}
     {% if dc.qtn.project_tags|length > 0 %}
-    <tr>
-      <th>Project Tags</th>
-      <td class="tags-row">{% for tag in dc.qtn.project_tags %}<span class="tag project-tag">{{ tag }}</span> {% endfor %}</td>
-    </tr>
+
     {% endif %}
     {% if dc.qtn.description %}
     <tr>
@@ -328,17 +275,15 @@
 {%- endmacro -%}
 {%- macro renderContent() -%}
   <div>
-    <div>
-      {{ renderReport(dc.report.total_report) }}
-    </div>
+
     {% if dc.qtn.versions|length > 0 %}
       {{ renderVersionsOverview() }}
     {% endif %}
     {% for chapter in dc.km.chapters %}
-      \newpage
+
       {{ renderChapter(chapter, loop.index) }}
     {% else %}
-      <p><i>No chapters</i></p>
+
     {% endfor %}
 
   </div>

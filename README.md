@@ -40,6 +40,10 @@ This document template for DSW is available as open-source via GitHub Repository
 
 ## Changelog
 
+### 4.0.4
+- updated based on fw:common-questionnaire-report:2.16.0
+- released 2025-12-17
+
 ### 4.0.3
 - updated metamodel 16->17
 
