@@ -20,14 +20,6 @@
     {% endif %}
   {% endfor %}
   {% if refs|length > 0 %}
-    {#<div class="references references-resourcepage">
-      <svg aria-hidden="true" data-prefix="fas" data-icon="book" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-book fa-w-14 fa-2x"><path fill="currentColor" d="M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z" class=""></path></svg>
-      <span><b>Resource Pages:</b></span>
-      {% for ref in refs %}
-        {%- set resourcePageLink = dc.config.client_url ~ '/knowledge-models/' ~ dc.package.id ~ '/resource-pages/' ~ ref.uuid -%}
-        <a id="{{ref.ref_uuid}}" class="reference resourcepage-link" href="{{ resourcePageLink }}"><i>{{ ref.collection_title }} - {{ ref.title }}</i></a>
-      {% endfor %}
-    </div>#}
   {% endif %}
 {%- endmacro -%}
 {%- macro renderURLReferences(question) -%}
@@ -42,13 +34,6 @@
     {% endif %}
   {% endfor %}
   {% if refs|length > 0 %}
-    {#<div class="references references-url" >
-      <svg aria-hidden="true" data-prefix="far" data-icon="external-link" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-external-link fa-w-18 fa-2x"><path fill="currentColor" d="M576 14.4l-.174 163.2c0 7.953-6.447 14.4-14.4 14.4H528.12c-8.067 0-14.56-6.626-14.397-14.691l2.717-73.627-2.062-2.062-278.863 278.865c-4.686 4.686-12.284 4.686-16.971 0l-23.029-23.029c-4.686-4.686-4.686-12.284 0-16.971L474.379 61.621l-2.062-2.062-73.626 2.717C390.626 62.44 384 55.946 384 47.879V14.574c0-7.953 6.447-14.4 14.4-14.4L561.6 0c7.953 0 14.4 6.447 14.4 14.4zM427.515 233.74l-24 24a12.002 12.002 0 0 0-3.515 8.485V458a6 6 0 0 1-6 6H54a6 6 0 0 1-6-6V118a6 6 0 0 1 6-6h301.976c10.691 0 16.045-12.926 8.485-20.485l-24-24A12.002 12.002 0 0 0 331.976 64H48C21.49 64 0 85.49 0 112v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V242.225c0-10.691-12.926-16.045-20.485-8.485z" class=""></path></svg>
-      <b>External Links:</b>
-      {% for ref in refs %}
-        <a id="{{ref.uuid}}" class="reference url-link" href="{{ref.url}}" target="_blank"><i>{{ref.label}}</i></a>
-      {% endfor %}
-    </div>#}
   {% endif %}
 {%- endmacro -%}
 {%- macro renderExperts(question) -%}
@@ -63,13 +48,6 @@
     {% endif %}
   {% endfor %}
   {% if experts|length > 0 %}
-    {#<div class="experts">
-      <svg aria-hidden="true" data-prefix="far" data-icon="address-book" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-address-book fa-w-14 fa-2x"><path fill="currentColor" d="M436 160c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12h-20V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h20c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12h-20v-64h20c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12h-20v-64h20zm-68 304H48V48h320v416zM208 256c35.3 0 64-28.7 64-64s-28.7-64-64-64-64 28.7-64 64 28.7 64 64 64zm-89.6 128h179.2c12.4 0 22.4-8.6 22.4-19.2v-19.2c0-31.8-30.1-57.6-67.2-57.6-10.8 0-18.7 8-44.8 8-26.9 0-33.4-8-44.8-8-37.1 0-67.2 25.8-67.2 57.6v19.2c0 10.6 10 19.2 22.4 19.2z" class=""></path></svg>
-      <b>Experts:</b>
-      {% for expert in experts %}
-        <i class="expert" id="{{expert.uuid}}">{{expert.name}} (<a href="mailto:{{expert.email}}">{{expert.email}}</a>)</i>
-      {% endfor %}
-    </div>#}
   {% endif %}
 {%- endmacro -%}
 {# ------------------------------------------------------------------------------------ #}
@@ -79,7 +57,7 @@
   <div class="answer-block answer-simple" id="{{path}}" data-path="{{path}}" data-type="answer">
     <p class="answer">
       {% if reply is of_type("StringReply") %}
-        <span>{{reply.value}}</span>
+        <span>{{reply.markdown_plain}}</span>
       {% elif reply.is_integration or reply.is_legacy_integration %}
         <span>{{reply.value|markdown}}</span>
       {% else %}
@@ -239,7 +217,7 @@
 {# ------------------------------------------------------------------------------------ #}
 {%- macro renderFrontPage() -%}
   <header>
-    <h1>{{dc.qtn.name}}</h1>
+    <h1>{{dc.project.name}}</h1>
 
     <table class="dmp-data">
       <tr>
@@ -247,17 +225,17 @@
         <td>{{dc.org.name}}</td>
 
       </tr>
-      {% if dc.qtn.created_by %}
+      {% if dc.project.created_by %}
       <tr>
         <th>Created by</th>
-        <td>{{dc.qtn.created_by.first_name}} {{dc.qtn.created_by.last_name}} (<a href="mailto:{{dc.qtn.created_by.email}}">{{dc.qtn.created_by.email}}</a>)</td>
+        <td>{{dc.project.created_by.first_name}} {{dc.project.created_by.last_name}} (<a href="mailto:{{dc.project.created_by.email}}">{{dc.project.created_by.email}}</a>)</td>
       </tr>
       {% endif %}
       <tr>
         <th>Based on</th>
         <td>{{dc.pkg.name}}, {{dc.pkg.version}} (<span class="package-id"><span class="organization-id">{{dc.pkg.org_id}}</span>:<span class="km-id">{{dc.pkg.km_id}}</span>:<span class="version">{{dc.pkg.version}}</span></span>)</td>
       </tr>
-      {% for version in dc.qtn.versions if version.uuid == dc.qtn.version %}
+      {% for version in dc.project.versions if version.uuid == dc.project.version %}
       <tr>
         <th>Version</th>
         <td>{{version.name}} ({{ version.created_at|datetime_format("%d %b %Y %H:%M:%S") }} UTC)</td>
@@ -266,16 +244,16 @@
       {% if dc.current_phase %}
 
       {% endif %}
-      {% if dc.qtn.project_tags|length > 0 %}
+      {% if dc.project.project_tags|length > 0 %}
       <tr>
         <th>Project Tags</th>
-        <td class="tags-row">{% for tag in dc.qtn.project_tags %}<span class="tag project-tag">{{ tag }}</span> {% endfor %}</td>
+        <td class="tags-row">{% for tag in dc.project.project_tags %}<span class="tag project-tag">{{ tag }}</span> {% endfor %}</td>
       </tr>
       {% endif %}
-      {% if dc.qtn.description %}
+      {% if dc.project.description %}
       <tr>
         <th>Description</th>
-        <td>{{ dc.qtn.description }}</td>
+        <td>{{ dc.project.description }}</td>
       </tr>
       {% endif %}
       <tr>
@@ -284,9 +262,15 @@
       </tr>
     </table>
     <p class="tool-info">
-      Report generated by {{ globals.fullName }} &lt;<a href="{{ globals.linkUrl }}" target="_blank">{{ globals.link }}</a>&gt;
-      {{ globals.image }}
-    </p>
+      Report generated by {{ dc.config.service_name }} &lt;<a href="{{ dc.config.service_url }}" target="_blank">{{ dc.config.service_domain_name }}</a>&gt;
+      <br/>
+      <br/>
+      <img
+        src="{{ dc.config.logo_url }}"
+        alt="Logo"
+        style="height: 8mm; width: auto;"
+      />
+    </p>    
   </header>
 {%- endmacro -%}
 {%- macro renderVersionsOverview() -%}
@@ -300,7 +284,7 @@
         </tr>
       <thead>
       <tbody>
-        {% for version in dc.qtn.versions|reverse %}
+        {% for version in dc.project.versions|reverse %}
           <tr>
             <td class="version-name">{{ version.name }}</td>
             <td class="version-date">{{ version.created_at|datetime_format("%d %b %Y") }}</td>
@@ -318,7 +302,7 @@
 {%- macro renderContent() -%}
   <main>
 
-      {% if dc.qtn.versions|length > 0 %}
+      {% if dc.project.versions|length > 0 %}
       <h2>History of Versions</h2>
       {{ renderVersionsOverview() }}
       {% endif %}
@@ -335,7 +319,7 @@
 {# ------------------------------------------------------------------------------------ #}
 <html>
   <head>
-    <title>{{ globals.name }} Questionnaire Report: {{dc.qtn.name}}</title>
+    <title>{{ globals.name }} Questionnaire Report: {{dc.project.name}}</title>
     <meta charset="utf-8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
