@@ -3,76 +3,24 @@
 {#  VARIABLES                                                                           #}
 {# ------------------------------------------------------------------------------------ #}
 {%- set dc = ctx|to_context_obj -%}
+{%- from "src/dates.j2" import formatDate, formatDateTime -%}
 {# ------------------------------------------------------------------------------------ #}
 {#  TAGS, REFERENCES, and EXPERTS MACROS                                                 #}
 {# ------------------------------------------------------------------------------------ #}
-{%- macro renderTags(question) -%}
-  {% if question.tags|length > 0 %}
 
-  {% endif %}
-{%- endmacro -%}
-{%- macro renderResourcePageReferences(question) -%}
-  {% set refs = [] %}
-  {% for ref in question.resource_page_references %}
-    {% if ref.resource_page_uuid and ref.resource_page and ref.resource_page.collection %}
-      {% do refs.append({
-        'ref_uuid': ref.uuid,
-        'uuid': ref.resource_page_uuid,
-        'collection_title': ref.resource_page.collection.title,
-        'title': ref.resource_page.title,
-      }) %}
-    {% endif %}
-  {% endfor %}
-  {% if refs|length > 0 %}
-  {% endif %}
-{%- endmacro -%}
-{%- macro renderURLReferences(question) -%}
-  {% set refs = [] %}
-  {% for ref in question.url_references %}
-    {% if ref.label and ref.url %}
-      {% do refs.append({
-        'uuid': ref.uuid,
-        'label': ref.label,
-        'url': ref.url,
-      }) %}
-    {% endif %}
-  {% endfor %}
-  {% if refs|length > 0 %}
-  {% endif %}
-{%- endmacro -%}
-{%- macro renderExperts(question) -%}
-  {% set experts = [] %}
-  {% for expert in question.experts %}
-    {% if expert.name and expert.email %}
-      {% do experts.append({
-        'uuid': expert.uuid,
-        'email': expert.email,
-        'name': expert.name,
-      }) %}
-    {% endif %}
-  {% endfor %}
-  {% if experts|length > 0 %}
-  {% endif %}
-{%- endmacro -%}
 {# ------------------------------------------------------------------------------------ #}
 {#  ANSWERS MACROS                                                                      #}
 {# ------------------------------------------------------------------------------------ #}
 {%- macro renderAnswerValue(question, reply, path, humanIdentifier) -%}
-  <div>
-    <p>
-      {% if reply is of_type("StringReply") %}
-        <span>{{reply.markdown_plain}}</span>
-      {% else %}
-        <span>{{reply.value.rsplit(" ![]")[0]|markdown}}</span>
-        {% if reply.is_legacy_integration %}
-          {# Integration #}
-          {% set integration = question.integration %}
-          <span>
-            ({{ integration.name }}: <a href="{{ integration.item(reply.item_id) }}">{{ reply.item_id }}</a>)
-          </span>
-        {% endif %}
-      {% endif %}
-    </p>
+  <div data-custom-style="Answer">
+    {{reply.value.rsplit(" ![]")[0]|markdown}}
+    {% if reply.is_legacy_integration %}
+      {# Integration #}
+      {% set integration = question.integration %}
+      <p>
+        ({{ integration.name }}: <a href="{{ integration.item(reply.item_id) }}">{{ reply.item_id }}</a>)
+      </p>
+    {% endif %}
   </div>
 {%- endmacro -%}
 {%- macro renderAnswerOption(question, reply, path, humanIdentifier) -%}
@@ -81,10 +29,9 @@
   {% set path = path ~ "." ~ answer.uuid %}
   {% set humanIdentifier = humanIdentifier ~ "." ~ hi|of_alphabet %}
   <div>
-    <p>
-       <span> {{answer.label}}</span>
-    </p>
-    
+    <div data-custom-style="Answer">
+      <p>{{answer.label}}</p>
+    </div>
     {% if answer.followups|length > 0 %}
       <div>
         {% set hiPrefix = humanIdentifier ~ "." %}
@@ -109,52 +56,43 @@
             {% set x = loop.index %}
             {{ renderQuestion(question, itemPath, itemHumanIdentifier ~ "." ~ x) }}
           {% else %}
-            <i>No follow up questions</i>
+            <div data-custom-style="Not Answered"><p>{% trans %}No follow up questions{% endtrans %}</p></div>
           {% endfor %}
         </div>
       </div>
     {% else %}
-      <i>No answer items</i>
+      <div data-custom-style="Not Answered"><p>{% trans %}No answer items{% endtrans %}</p></div>
     {% endfor %}
   </div>
 {%- endmacro -%}
 {%- macro renderAnswerChoiceList(question, reply, path, humanIdentifier) -%}
   <div>
-    <ul>
     {% for choice in question.choices %}
       {%- if choice in reply.choices %}
-        <li>{{ choice.label }}</li>
-      {%- else %}
-        
+        <div data-custom-style="Choice Selected"><p>■ {{ choice.label }}</p></div>
       {%- endif %}
     {% endfor %}
-    </ul>
   </div>
 {%- endmacro -%}
 {%- macro renderAnswerItemSelect(question, reply, path, humanIdentifier) -%}
-  <div>
-    <p> {{ reply.item_title }}</p>
+  <div data-custom-style="Answer">
+    <p>{{ reply.item_title }}</p>
   </div>
 {%- endmacro -%}
 {%- macro renderAnswerFile(question, reply, path, humanIdentifier) -%}
-  <div>
   {% if reply.file %}
-    <p> <a href="{{ reply.file.download_url }}" target="_blank">{{ reply.file.name }}</a> ({{ reply.file.size|bytesize_format }})</p>
-  {% else %}
-    <p> The file has been deleted</p>
-  {% endif %}
+  <div data-custom-style="Answer">
+    <p><a href="{{ reply.file.download_url }}" target="_blank">{{ reply.file.name }}</a> ({{ reply.file.size|bytesize_format }})</p>
   </div>
+  {% else %}
+  <div data-custom-style="Not Answered">
+    <p>{% trans %}The file has been deleted{% endtrans %}</p>
+  </div>
+  {% endif %}
 {%- endmacro -%}
 {# ------------------------------------------------------------------------------------ #}
 {#  QUESTION MACROS                                                                     #}
 {# ------------------------------------------------------------------------------------ #}
-{%- macro renderQuestionExtras(question) -%}
-  <div>
-    {{ renderResourcePageReferences(question) }}
-    {{ renderURLReferences(question) }}
-    {{ renderExperts(question) }}
-  </div>
-{%- endmacro -%}
 {%- macro renderQuestionReply(question, path, humanIdentifier) -%}
   {# Question - Answers #}
   {% set reply = question.replies.get(path) %}
@@ -174,24 +112,24 @@
     {% elif question is of_type("FileQuestion") and reply is of_type("FileReply") %}
       {{ renderAnswerFile(question, reply, path, humanIdentifier) }}
     {% endif %}
-  {% else %}
-    
   {% endif %}
 {%- endmacro -%}
 {%- macro renderQuestion(question, path, humanIdentifier) -%}
   {% set path = path ~ "." ~ question.uuid %}
-  <div>
-    <h2>{{humanIdentifier}}. {{question.title}}</h2>
+  {% set reply = question.replies.get(path) %}
+  {% if reply and reply.value %}
+    {#- top-level questions are Heading 2, each level of follow-ups one level lower #}
+    {% set level = [2 + (humanIdentifier|string).count(".") // 2, 6]|min %}
+    <div>
+      <h{{ level }}><span data-custom-style="Question Number">{{humanIdentifier}}</span> {{question.title}}</h{{ level }}>
 
-    {{ renderQuestionExtras(question) }}
-
-    {{ renderQuestionReply(question, path, humanIdentifier) }}
-  </div>
+      {{ renderQuestionReply(question, path, humanIdentifier) }}
+    </div>
+  {% endif %}
 {%- endmacro -%}
 {# ------------------------------------------------------------------------------------ #}
 {#  CHAPTER MACROS                                                                      #}
 {# ------------------------------------------------------------------------------------ #}
-
 {%- macro renderChapter(chapter, humanIdentifier) -%}
       <section>
         <h1>{{humanIdentifier|roman}}. {{chapter.title}}</h1>
@@ -199,8 +137,6 @@
         <section>
           {% for question in chapter.questions %}
             {{ renderQuestion(question, chapter.uuid, loop.index) }}
-          {% else %}
-
           {% endfor %}
         </section>
       </section>
@@ -210,71 +146,78 @@
 {# ------------------------------------------------------------------------------------ #}
 {%- macro renderFrontPage() -%}
   <table>
-    <tr>
-      <th>Organization</th>
-      <td>{{dc.org.name}}</td>
-    </tr>
     {% if dc.project.created_by %}
     <tr>
-      <th>Created by</th>
+      <th>{% trans %}Created by{% endtrans %}</th>
       <td>{{dc.project.created_by.first_name}} {{dc.project.created_by.last_name}} (<a href="mailto:{{dc.project.created_by.email}}">{{dc.project.created_by.email}}</a>)</td>
     </tr>
     {% endif %}
     <tr>
-      <th>Based on</th>
-      <td>{{dc.pkg.name}}, {{dc.pkg.version}} (<code>{{dc.pkg.org_id}}:{{dc.pkg.km_id}}:{{dc.pkg.version}}</code>)</td>
+      <th>{% trans %}Based on{% endtrans %}</th>
+      <td>{{dc.km_package.name}}, {{dc.km_package.version}} (<code>{{dc.km_package.id}}:{{dc.km_package.version}}</code>)</td>
     </tr>
-    {% for version in dc.project.versions if version.uuid == dc.project.version %}
+    {% for version in dc.questionnaire.versions if version.uuid == dc.questionnaire.version %}
     <tr>
-      <th>Version</th>
-      <td>{{version.name}} ({{ version.created_at|datetime_format("%d %b %Y %H:%M:%S") }} UTC)</td>
+      <th>{% trans %}Version{% endtrans %}</th>
+      <td>{% trans name=version.name, date=formatDateTime(version.created_at) %}{{ name }} ({{ date }} UTC){% endtrans %}</td>
     </tr>
     {% endfor %}
-    {% if dc.current_phase %}
-
-    {% endif %}
     {% if dc.project.project_tags|length > 0 %}
-
+    <tr>
+      <th>{% trans %}Project Tags{% endtrans %}</th>
+      <td class="tags-row">{% for tag in dc.project.project_tags %}<span class="tag project-tag">{{ tag }}</span> {% endfor %}</td>
+    </tr>
     {% endif %}
     {% if dc.project.description %}
     <tr>
-      <th>Description</th>
+      <th>{% trans %}Description{% endtrans %}</th>
       <td>{{ dc.project.description }}</td>
     </tr>
     {% endif %}
     <tr>
-      <th>Created at</th>
-      <td>{{ dc.project.created_at|datetime_format("%d %b %Y") }}</td>
+      <th>{% trans %}Created at{% endtrans %}</th>
+      <td>{{ formatDate(dc.document.created_at) }}</td>
     </tr>
   </table>
+
+  <div data-custom-style="Tool Info">
+    <p>{% trans service_name=dc.config.service_name %}Report generated by {{ service_name }}{% endtrans %} &lt;<a href="{{ dc.config.service_url }}">{{ dc.config.service_domain_name }}</a>&gt;</p>
+  </div>
 
   \newpage
 {%- endmacro -%}
 {%- macro renderVersionsOverview() -%}
   <div>
-    <h2>History of Versions</h2>
-    <p>The named versions of this document:</p>
-    <ul>
-      {% for version in dc.project.versions|reverse %}
-        <li>
-          <strong>{{ version.name }}</strong> ({{ version.created_at|datetime_format("%d %b %Y") }})
-          <p>{{ version.description }}</p>
-        </li>
-      {% endfor %}
-    </ul>
+    <h1>{% trans %}History of Versions{% endtrans %}</h1>
+    <p>{% trans %}The named versions of this document:{% endtrans %}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans %}Version{% endtrans %}</th>
+          <th>{% trans %}Date{% endtrans %}</th>
+          <th>{% trans %}Changes{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for version in dc.questionnaire.versions|reverse %}
+          <tr>
+            <td><strong>{{ version.name }}</strong></td>
+            <td>{{ formatDate(version.created_at) }}</td>
+            <td>{{ version.description }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {%- endmacro -%}
 {%- macro renderContent() -%}
   <div>
-
-    {% if dc.project.versions|length > 0 %}
+    {% if dc.questionnaire.versions|length > 0 %}
       {{ renderVersionsOverview() }}
     {% endif %}
     {% for chapter in dc.km.chapters %}
-
+      \newpage
       {{ renderChapter(chapter, loop.index) }}
-    {% else %}
-
     {% endfor %}
 
   </div>
@@ -282,7 +225,7 @@
 {# ------------------------------------------------------------------------------------ #}
 {#  HTML TEMPLATE                                                                       #}
 {# ------------------------------------------------------------------------------------ #}
-<html>
+<html lang="{{ dc.document.locale.code if dc.document.locale else "en" }}">
   <head>
     <title>{{dc.project.name}}</title>
     <meta charset="utf-8">

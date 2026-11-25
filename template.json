@@ -1,15 +1,15 @@
 {
-  "templateId": "questionnaire-report-cas",
+  "id": "questionnaire-report-cas",
   "organizationId": "053avzc18",
-  "version": "4.1.0",
+  "version": "5.0.1",
   "name": "Questionnaire Report - CAS fork",
   "description": "Exported questions and answers from a questionnaire",
   "license": "Apache-2.0",
-  "metamodelVersion": "18.0",
+  "metamodelVersion": "19.0",
+  "language": "en",
   "allowedPackages": [
     {
-      "orgId": null,
-      "kmId": null,
+      "id": null,
       "minVersion": null,
       "maxVersion": null
     }
@@ -38,6 +38,36 @@
         {
           "name": "json",
           "options": {}
+        }
+      ]
+    },
+    {
+      "uuid": "dbc94579-40d7-42c3-975c-71e30d07778b",
+      "name": "LaTeX Document",
+      "icon": "far fa-file-alt",
+      "steps": [
+        {
+          "name": "jinja",
+          "options": {
+            "content-type": "text/x-tex",
+            "extension": "tex",
+            "template": "src/default.tex.j2"
+          }
+        }
+      ]
+    },
+    {
+      "uuid": "f0533e48-f4c5-4af2-b2c1-5a47d4a247c0",
+      "name": "Markdown Document",
+      "icon": "far fa-file-alt",
+      "steps": [
+        {
+          "name": "jinja",
+          "options": {
+            "content-type": "text/markdown",
+            "extension": "md",
+            "template": "src/default.md.j2"
+          }
         }
       ]
     },
@@ -85,7 +115,7 @@
     }
   ],
   "_tdk": {
-    "version": "4.29.0",
+    "version": "5.0.0",
     "readmeFile": "README.md",
     "files": [
       "*",
